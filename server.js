@@ -94,6 +94,51 @@ DB.exec(`
 PRAGMA journal_mode = WAL;
 PRAGMA foreign_keys = ON;
 
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  balance REAL NOT NULL DEFAULT 1000,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS companies (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  ticker TEXT NOT NULL UNIQUE,
+  total_shares INTEGER NOT NULL,
+  available_shares INTEGER NOT NULL,
+  initial_price REAL NOT NULL,
+  current_price REAL NOT NULL,
+  owner_id INTEGER REFERENCES users(id),
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  treasury_balance REAL NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS holdings (
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  company_id INTEGER NOT NULL REFERENCES companies(id),
+  quantity INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (user_id, company_id)
+);
+
+CREATE TABLE IF NOT EXISTS trades (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  company_id INTEGER NOT NULL REFERENCES companies(id),
+  side TEXT NOT NULL,
+  quantity INTEGER NOT NULL,
+  price REAL NOT NULL,
+  total REAL NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  token_hash TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  expires_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_companies_owner ON companies(owner_id);
 CREATE INDEX IF NOT EXISTS idx_trades_user ON trades(user_id);
 CREATE INDEX IF NOT EXISTS idx_trades_company ON trades(company_id);
