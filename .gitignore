@@ -1,0 +1,27 @@
+yonox.db
+yonox.db-wal
+yonox.db-shm
+*.db
+*.sqlite
+*.sqlite3
+server.log
+server.pid
+*.backup
+*.backup-*
+.env
+.env.*
+node_modules/
+.DS_Store
+
+# Local backups and sensitive files
+*.bak
+*.bak.*
+*.backup*
+*_backup*/
+*.pem
+itube-server.json
+nohup.out
+server.log*
+server.pid
+*.db*
+.env*
